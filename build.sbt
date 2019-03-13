@@ -77,8 +77,7 @@ lazy val core = module("core")
 
 lazy val scalaz = module("scalaz")
   .settings(
-    name := scalazName,
-    libraryDependencies += "org.scalaz" %%% "scalaz-core" % scalazVersion.value
+    name := scalazName
   )
   .dependsOn(
     core,
@@ -116,7 +115,7 @@ val tagOrHash = Def.setting {
 }
 
 def gitHash(): String =
-  sys.process.Process("git rev-parse HEAD").lines_!.head
+  sys.process.Process("git rev-parse HEAD").lineStream_!.head
 
 val unusedWarnings = Def.setting {
   PartialFunction
@@ -200,7 +199,8 @@ val commonSettings = _root_.scalaprops.ScalapropsPlugin.autoImport.scalapropsCor
       case Some((2, v)) if v <= 12 =>
         Seq(
           "-Yno-adapted-args",
-          "-Xfuture"
+          "-Xfuture",
+          "-Ypartial-unification"
         )
     }
     .toList
@@ -269,6 +269,8 @@ lazy val nativeProjects = Seq[ProjectReference](
   scalazNative
 )
 
+lazy val scalazSnapshotURI = uri("git://github.com/scalaz/scalaz#series/7.3.x")
+
 lazy val genJS = gen.js
 lazy val genJVM = gen.jvm
 lazy val genNative = gen.native
@@ -289,9 +291,9 @@ lazy val coreRoot = project
     notPublish
   )
 
-lazy val scalazJS = scalaz.js
-lazy val scalazJVM = scalaz.jvm
-lazy val scalazNative = scalaz.native
+lazy val scalazJS = scalaz.js.dependsOn(ProjectRef(scalazSnapshotURI, "coreJS"))
+lazy val scalazJVM = scalaz.jvm.dependsOn(ProjectRef(scalazSnapshotURI, "coreJVM"))
+lazy val scalazNative = scalaz.native.dependsOn(ProjectRef(scalazSnapshotURI, "coreNative"))
 lazy val scalazRoot = project
   .aggregate(scalazJS, scalazJVM, scalazNative)
   .settings(

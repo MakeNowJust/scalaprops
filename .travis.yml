@@ -3,7 +3,6 @@ language: scala
 dist: xenial
 
 scala:
-  - 2.10.7
   - 2.11.12
   - 2.12.8
   - 2.13.0
@@ -22,7 +21,7 @@ script:
   - git config core.whitespace tab-in-indent,trailing-space,space-before-tab,cr-at-eol
   - git show --oneline --check
   - wget https://raw.githubusercontent.com/paulp/sbt-extras/3c8fcadc3376e/sbt && chmod +x ./sbt
-  - ./sbt scalafmtCheckAll ++${TRAVIS_SCALA_VERSION} checkGenerateCodeError compile test:compile scalapropsTestNames scalapropsJS/test scalapropsJVM/test scalazJS/test scalazJVM/test "project /" publishLocal
+  - ./sbt "++${TRAVIS_SCALA_VERSION}!" checkGenerateCodeError compile test:compile scalapropsTestNames scalapropsJS/test scalapropsJVM/test scalazJS/test scalazJVM/test
 before_cache:
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
   - find $HOME/.ivy2/cache -name "*SNAPSHOT*" | xargs rm -rf
@@ -42,7 +41,7 @@ matrix:
       jdk: openjdk11
       script:
       - java -version
-      - sbt ++$TRAVIS_SCALA_VERSION scalapropsJS/test scalapropsJVM/test scalazJS/test scalazJVM/test "project /" publishLocal
+      - sbt ++$TRAVIS_SCALA_VERSION scalapropsJS/test scalapropsJVM/test scalazJS/test scalazJVM/test
     - os: windows
       language: bash
       env:
@@ -52,4 +51,4 @@ matrix:
       - source .install-jdk-travis.sh
       script:
       - wget https://raw.githubusercontent.com/paulp/sbt-extras/3c8fcadc3376e/sbt && chmod +x ./sbt
-      - ./sbt "++ 2.13.0" compile test:compile scalapropsJVM/test scalazJVM/test "project /" publishLocal
+      - ./sbt "++ 2.13.0" compile test:compile scalapropsJVM/test scalazJVM/test

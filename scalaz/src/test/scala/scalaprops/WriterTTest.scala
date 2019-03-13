@@ -7,10 +7,10 @@ import ScalapropsScalaz._
 
 object WriterTTest extends Scalaprops {
 
-  val bindRecIList = scalazlaws.bindRec.laws[({type l[a] = WriterT[IList, Byte, a]})#l].andThenParam(Param.maxSize(1))
+  val bindRecIList = scalazlaws.bindRec.laws[({type l[a] = WriterT[Byte, IList, a]})#l].andThenParam(Param.maxSize(1))
 
   val testMaybe1 = {
-    type F[A] = WriterT[Maybe, Int, A]
+    type F[A] = WriterT[Int, Maybe, A]
 
     Properties.list(
       scalazlaws.monadPlusStrong.all[F],
@@ -21,13 +21,13 @@ object WriterTTest extends Scalaprops {
   }
 
   val testMaybe2 = {
-    type F[A, B] = WriterT[Maybe, A, B]
+    type F[A, B] = WriterT[A, Maybe, B]
 
     scalazlaws.bitraverse.all[F]
   }
 
   val iList1 = {
-    type F[A] = WriterT[IList, Int, A]
+    type F[A] = WriterT[Int, IList, A]
 
     Properties.list(
       scalazlaws.monadPlusStrong.all[F],
@@ -37,7 +37,7 @@ object WriterTTest extends Scalaprops {
   }
 
   val tree = {
-    type F[A] = WriterT[Tree, Byte, A]
+    type F[A] = WriterT[Byte, Tree, A]
 
     Properties.list(
       scalazlaws.monad.all[F],
@@ -49,7 +49,7 @@ object WriterTTest extends Scalaprops {
   val either = {
     type E = Byte
     type F[A] = E \/ A
-    type G[A] = WriterT[F, Short, A]
+    type G[A] = WriterT[Short, F, A]
 
     Properties.list(
       scalazlaws.monadError.all[G, E],
@@ -71,6 +71,6 @@ object WriterTTest extends Scalaprops {
     )
   }
 
-  val monadTrans = scalazlaws.monadTrans.all[({type l[f[_], a] = WriterT[f, Int, a]})#l]
+  val monadTrans = scalazlaws.monadTrans.all[({type l[f[_], a] = WriterT[Int, f, a]})#l]
 
 }
